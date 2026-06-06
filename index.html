@@ -75,6 +75,7 @@
   <thead>
     <tr>
       <th onclick="ordenarLeaderboard('ID')">ID</th>
+      <th onclick="ordenarLeaderboard('CIRCUITO')">CIRCUITO</th> 
       <th onclick="ordenarLeaderboard('MARCA')">MARCA</th>
       <th onclick="ordenarLeaderboard('MODELO')">MODELO</th>
       <th onclick="ordenarLeaderboard('TIPO / CATEGORÍA')">TIPO / CATEGORÍA</th>
@@ -111,6 +112,11 @@
         <div class="form-group">
           <label>Tracción</label>
           <input type="text" id="input-traccion" placeholder="Ej: AWD, RWD, FWD" required />
+        </div>
+
+        <div class="form-group">
+          <label>Circuito / Pista</label>
+          <input type="text" id="input-circuito" placeholder="Ej: Horizon Festival Circuit" required />
         </div>
       </div>
 

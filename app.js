@@ -257,12 +257,14 @@ document.getElementById("btn-grid-girar").addEventListener("click", () => {
 
 // 5. LÓGICA DEL FORMULARIO DE TIEMPOS MODIFICADA (DIRECTA)
 function abrirModalTiempos(auto) {
+  document.getElementById("input-circuito").value = "";
   document.getElementById("modal-titulo-auto").innerText =
     `${auto.marca} - ${auto.modelo}`;
 
   const inputTipo = document.getElementById("input-tipo");
   const inputPais = document.getElementById("input-pais");
   const inputTraccion = document.getElementById("input-traccion");
+  inputTraccion.value = "";
 
   if (auto.tipo && auto.tipo.trim() !== "") {
     inputTipo.value = auto.tipo;
@@ -283,9 +285,6 @@ function abrirModalTiempos(auto) {
     inputPais.readOnly = false;
     inputPais.style.opacity = "1";
   }
-
-  // Tracción manual vacía por defecto para llenado del usuario
-  inputTraccion.value = "";
 
   // Extraer dinámicamente datos sugeridos del JSON base si existen
   let piSugerido = "";
@@ -308,7 +307,7 @@ document.getElementById("btn-modal-cancelar").addEventListener("click", () => {
   modalTiempos.classList.remove("activo");
 });
 
-// Guardado Limpio en Formato Plano (Formato idéntico a tu captura de Excel)
+// Guardado Limpio en Formato Plano sin duplicados
 document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -322,9 +321,11 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
     .getElementById("input-traccion")
     .value.trim()
     .toUpperCase();
+  const circuitoValor = document.getElementById("input-circuito").value.trim();
 
   const nuevoRegistro = {
     ID: historialTiempos.length + 1,
+    CIRCUITO: circuitoValor,
     MARCA: autoGanadorActual.marca,
     MODELO: autoGanadorActual.modelo,
     "TIPO / CATEGORÍA": document.getElementById("input-tipo").value.trim(),
@@ -335,6 +336,7 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
     CLASE: claseValor,
   };
 
+  // 🛠️ CORREGIDO: Se eliminó el segundo bloque idéntico que duplicaba el guardado
   historialTiempos.push(nuevoRegistro);
   localStorage.setItem("forza_leaderboard", JSON.stringify(historialTiempos));
 
@@ -411,16 +413,18 @@ function mostrarLeaderboardEnPantalla() {
   }
 
   if (registrosFiltrados.length === 0) {
-    cuerpo.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:#666;">No hay tiempos registrados para los filtros activos.</td></tr>`;
+    // 🛠️ AJUSTADO: colspan="10" para abarcar la columna de Circuito correctamente
+    cuerpo.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:#666;">No hay tiempos registrados para los filtros activos.</td></tr>`;
     return;
   }
 
-  // Construcción de celdas planas ordenadas tal como la captura
+  // Pintar filas simplificadas tal como Excel
   registrosFiltrados.forEach((reg) => {
     const fila = document.createElement("tr");
 
     fila.innerHTML = `
       <td style="color:#00ccff; font-weight:bold; text-align:center;">${reg.ID}</td>
+      <td style="color:#ffcc00; font-weight:bold;">${reg.CIRCUITO || "N/A"}</td> 
       <td style="font-weight:bold; color:#fff;">${reg.MARCA}</td>
       <td>${reg.MODELO}</td>
       <td>${reg["TIPO / CATEGORÍA"]}</td>
@@ -446,7 +450,6 @@ function ordenarLeaderboard(columna) {
     let valA = a[columna];
     let valB = b[columna];
 
-    // Control preventivo si algún dato llega vacío
     if (valA === undefined || valA === null) valA = "";
     if (valB === undefined || valB === null) valB = "";
 
