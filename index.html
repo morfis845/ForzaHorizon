@@ -55,7 +55,10 @@
         </div>
 
         <div class="linea-acciones">
-            <button id="btn-grid-girar">GIRAR</button>
+            <div class="acciones-container">
+                <button id="btn-grid-girar" class="btn-principal">🎰 GIRAR RULETA</button>
+                <button id="btn-agregar-manual" class="btn-secundario">🚗 AGREGAR MANUAL</button>
+            </div>
             <button id="btn-exportar" class="btn-secundario">📥 Descargar Excel</button>
             <button id="btn-limpiar" class="btn-peligro">🗑️ Limpiar Datos</button>
         </div>
@@ -99,6 +102,16 @@
 
     <form id="form-tiempos">
       <div class="form-grid">
+        <div class="form-group" id="grupo-manual-marca" style="display: none;">
+          <label>Marca del Vehículo</label>
+          <input type="text" id="input-manual-marca" placeholder="Ej: Ferrari" />
+        </div>
+        
+        <div class="form-group" id="grupo-manual-modelo" style="display: none;">
+          <label>Modelo del Vehículo</label>
+          <input type="text" id="input-manual-modelo" placeholder="Ej: F40" />
+        </div>
+
         <div class="form-group">
           <label>Categoría / Tipo de Auto</label>
           <input type="text" id="input-tipo" placeholder="Ej: Retro Sports Cars" required />

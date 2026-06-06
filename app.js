@@ -6,6 +6,8 @@ const ALTURA_CARD = 120;
 
 // Estado del Auto Ganador Actual
 let autoGanadorActual = null;
+// Variable global para rastrear el origen del formulario (Ruleta vs Manual)
+let esRegistroManual = false;
 
 // Memoria Local: Carga el historial unificado guardado en el navegador
 let historialTiempos =
@@ -69,18 +71,18 @@ function inicializarYCrearFiltros() {
     });
 }
 
-function crearTagElement(valor, categoria) {
+function crearTagElement(valor, category) {
   const boton = document.createElement("div");
   boton.className = "tag-filtro activo";
-  boton.innerText = categoria === "clase" ? `Clase ${valor}` : valor;
+  boton.innerText = category === "clase" ? `Clase ${valor}` : valor;
   boton.dataset.value = valor;
 
   boton.addEventListener("click", () => {
     if (girando) return;
     let setDestino =
-      categoria === "tipo"
+      category === "tipo"
         ? tiposActivos
-        : categoria === "clase"
+        : category === "clase"
           ? clasesActivas
           : paisesActivos;
 
@@ -194,7 +196,7 @@ function construirRodilloVisual() {
 }
 
 // ==========================================
-// MECÁNICA DE LA RULETA
+// MECÁNICA DE LA RULETA Y MODO MANUAL
 // ==========================================
 
 document.getElementById("btn-grid-girar").addEventListener("click", () => {
@@ -244,57 +246,99 @@ document.getElementById("btn-grid-girar").addEventListener("click", () => {
       `¡GANASTE: ${autoGanadorActual.modelo}!`;
     girando = false;
 
-    setTimeout(() => abrirModalTiempos(autoGanadorActual), 1200);
+    setTimeout(() => abrirModalTiempos(autoGanadorActual, false), 1200);
   }, 4000);
+});
+
+// Evento para el botón Manual del HUB principal
+document.getElementById("btn-agregar-manual").addEventListener("click", () => {
+  if (girando) return;
+  abrirModalTiempos(null, true);
 });
 
 // ==========================================
 // MODAL DE TIEMPOS Y GUARDADO
 // ==========================================
 
-function abrirModalTiempos(auto) {
+function abrirModalTiempos(auto, esManual = false) {
+  esRegistroManual = esManual;
   document.getElementById("input-circuito").value = "";
-  document.getElementById("modal-titulo-auto").innerText =
-    `${auto.marca} - ${auto.modelo}`;
+
+  const txtTitulo = document.getElementById("modal-titulo-auto");
+  const grupoMarca = document.getElementById("grupo-manual-marca");
+  const grupoModelo = document.getElementById("grupo-manual-modelo");
+  const inMarca = document.getElementById("input-manual-marca");
+  const inModelo = document.getElementById("input-manual-modelo");
 
   const inputTipo = document.getElementById("input-tipo");
   const inputPais = document.getElementById("input-pais");
   const inputTraccion = document.getElementById("input-traccion");
+
   inputTraccion.value = "";
 
-  if (auto.tipo && auto.tipo.trim() !== "") {
-    inputTipo.value = auto.tipo;
-    inputTipo.readOnly = true;
-    inputTipo.style.opacity = "0.6";
-  } else {
+  if (esManual) {
+    // 1. Configuramos la interfaz para Entrada Manual
+    txtTitulo.innerText = "REGISTRO MANUAL DE AUTO";
+    grupoMarca.style.display = "block";
+    grupoModelo.style.display = "block";
+    inMarca.required = true;
+    inModelo.required = true;
+    inMarca.value = "";
+    inModelo.value = "";
+
+    // Desbloquear Tipo y País para escritura libre
     inputTipo.value = "";
     inputTipo.readOnly = false;
     inputTipo.style.opacity = "1";
-  }
 
-  if (auto.pais && auto.pais.trim() !== "") {
-    inputPais.value = auto.pais;
-    inputPais.readOnly = true;
-    inputPais.style.opacity = "0.6";
-  } else {
     inputPais.value = "";
     inputPais.readOnly = false;
     inputPais.style.opacity = "1";
+
+    document.getElementById("race-pi").value = "";
+    document.getElementById("race-clase").value = "";
+  } else {
+    // 2. Configuramos la interfaz para Ganador de la Ruleta
+    txtTitulo.innerText = `${auto.marca} - ${auto.modelo}`;
+    grupoMarca.style.display = "none";
+    grupoModelo.style.display = "none";
+    inMarca.required = false;
+    inModelo.required = false;
+
+    if (auto.tipo && auto.tipo.trim() !== "") {
+      inputTipo.value = auto.tipo;
+      inputTipo.readOnly = true;
+      inputTipo.style.opacity = "0.6";
+    } else {
+      inputTipo.value = "";
+      inputTipo.readOnly = false;
+      inputTipo.style.opacity = "1";
+    }
+
+    if (auto.pais && auto.pais.trim() !== "") {
+      inputPais.value = auto.pais;
+      inputPais.readOnly = true;
+      inputPais.style.opacity = "0.6";
+    } else {
+      inputPais.value = "";
+      inputPais.readOnly = false;
+      inputPais.style.opacity = "1";
+    }
+
+    let piSugerido = "";
+    let claseSugerida = "";
+    if (auto.clase) {
+      const partes = auto.clase.trim().split(" ");
+      claseSugerida = partes[partes.length - 1].toUpperCase();
+      const numeroEncontrado = partes[0].replace(/\D/g, "");
+      if (numeroEncontrado) piSugerido = numeroEncontrado;
+    }
+
+    document.getElementById("race-pi").value = piSugerido;
+    document.getElementById("race-clase").value = claseSugerida;
   }
 
-  let piSugerido = "";
-  let claseSugerida = "";
-  if (auto.clase) {
-    const partes = auto.clase.trim().split(" ");
-    claseSugerida = partes[partes.length - 1].toUpperCase();
-    const numeroEncontrado = partes[0].replace(/\D/g, "");
-    if (numeroEncontrado) piSugerido = numeroEncontrado;
-  }
-
-  document.getElementById("race-pi").value = piSugerido;
   document.getElementById("race-tiempo").value = "";
-  document.getElementById("race-clase").value = claseSugerida;
-
   modalTiempos.classList.add("activo");
 }
 
@@ -304,6 +348,18 @@ document.getElementById("btn-modal-cancelar").addEventListener("click", () => {
 
 document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   e.preventDefault();
+
+  let marcaFinal = "";
+  let modeloFinal = "";
+
+  // Extraer valores según procedencia
+  if (esRegistroManual) {
+    marcaFinal = document.getElementById("input-manual-marca").value.trim();
+    modeloFinal = document.getElementById("input-manual-modelo").value.trim();
+  } else {
+    marcaFinal = autoGanadorActual.marca;
+    modeloFinal = autoGanadorActual.modelo;
+  }
 
   const piValor = parseInt(document.getElementById("race-pi").value) || 0;
   const tiempoValor = document.getElementById("race-tiempo").value.trim();
@@ -320,8 +376,8 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   const nuevoRegistro = {
     ID: historialTiempos.length + 1,
     CIRCUITO: circuitoValor,
-    MARCA: autoGanadorActual.marca,
-    MODELO: autoGanadorActual.modelo,
+    MARCA: marcaFinal,
+    MODELO: modeloFinal,
     "TIPO / CATEGORÍA": document.getElementById("input-tipo").value.trim(),
     PAÍS: document.getElementById("input-pais").value.trim(),
     TRACCION: traccionValor,
@@ -338,7 +394,7 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   modalTiempos.classList.remove("activo");
 
   setTimeout(() => {
-    alert(`¡Datos de ${autoGanadorActual.modelo} guardados exitosamente!`);
+    alert(`¡Datos de ${modeloFinal} guardados exitosamente!`);
   }, 100);
 });
 
