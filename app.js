@@ -24,18 +24,9 @@ let paisesActivos = new Set(),
   tiposActivos = new Set(),
   clasesActivas = new Set();
 
-// 1. Cargar el JSON e Inicializar
-fetch("autos_fh6.json")
-  .then((res) => res.json())
-  .then((data) => {
-    todosLosAutos = data;
-    inicializarYCrearFiltros();
-    filtrarAutos();
-    configurarAccionesMasivas();
-    actualizarBotonExportar();
-    mostrarLeaderboardEnPantalla();
-  })
-  .catch((err) => console.error("Error cargando el archivo JSON:", err));
+// ==========================================
+// FUNCIONES DE CONTROL Y UI
+// ==========================================
 
 function actualizarBotonExportar() {
   if (btnExportar) {
@@ -43,7 +34,6 @@ function actualizarBotonExportar() {
   }
 }
 
-// 2. Mapear datos y pintar tags interactivos
 function inicializarYCrearFiltros() {
   todosLosAutos.forEach((auto) => {
     if (auto.pais) {
@@ -203,7 +193,10 @@ function construirRodilloVisual() {
   });
 }
 
-// 4. Mecánica de la Ruleta (Vinculada a tu id="btn-grid-girar")
+// ==========================================
+// MECÁNICA DE LA RULETA
+// ==========================================
+
 document.getElementById("btn-grid-girar").addEventListener("click", () => {
   if (girando || autosFiltrados.length === 0) return;
   girando = true;
@@ -255,7 +248,10 @@ document.getElementById("btn-grid-girar").addEventListener("click", () => {
   }, 4000);
 });
 
-// 5. LÓGICA DEL FORMULARIO DE TIEMPOS MODIFICADA (DIRECTA)
+// ==========================================
+// MODAL DE TIEMPOS Y GUARDADO
+// ==========================================
+
 function abrirModalTiempos(auto) {
   document.getElementById("input-circuito").value = "";
   document.getElementById("modal-titulo-auto").innerText =
@@ -286,7 +282,6 @@ function abrirModalTiempos(auto) {
     inputPais.style.opacity = "1";
   }
 
-  // Extraer dinámicamente datos sugeridos del JSON base si existen
   let piSugerido = "";
   let claseSugerida = "";
   if (auto.clase) {
@@ -307,7 +302,6 @@ document.getElementById("btn-modal-cancelar").addEventListener("click", () => {
   modalTiempos.classList.remove("activo");
 });
 
-// Guardado Limpio en Formato Plano sin duplicados
 document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -336,13 +330,11 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
     CLASE: claseValor,
   };
 
-  // 🛠️ CORREGIDO: Se eliminó el segundo bloque idéntico que duplicaba el guardado
   historialTiempos.push(nuevoRegistro);
   localStorage.setItem("forza_leaderboard", JSON.stringify(historialTiempos));
 
   actualizarBotonExportar();
   mostrarLeaderboardEnPantalla();
-
   modalTiempos.classList.remove("activo");
 
   setTimeout(() => {
@@ -350,7 +342,10 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   }, 100);
 });
 
-// 6. EXPORTACIÓN LIMPIA A EXCEL (Estructura de columnas planas fijas)
+// ==========================================
+// EXPORTACIÓN Y REINICIO
+// ==========================================
+
 btnExportar.addEventListener("click", () => {
   if (historialTiempos.length === 0) {
     alert(
@@ -368,17 +363,14 @@ btnExportar.addEventListener("click", () => {
   XLSX.writeFile(libroTrabajo, "Forza_6_Live_Leaderboard.xlsx");
 });
 
-// 7. LIMPIAR EL LEADERBOARD
 document.getElementById("btn-limpiar").addEventListener("click", () => {
   if (historialTiempos.length === 0) {
     alert("El Leaderboard ya está completamente vacío.");
     return;
   }
-
   const confirmarBorrado = confirm(
     `⚠️ ¡ATENCIÓN! Está a punto de borrar permanentemente los ${historialTiempos.length} autos registrados.\n\n¿Desea continuar?`,
   );
-
   if (confirmarBorrado) {
     historialTiempos = [];
     localStorage.removeItem("forza_leaderboard");
@@ -388,7 +380,10 @@ document.getElementById("btn-limpiar").addEventListener("click", () => {
   }
 });
 
-// 8. CONTROL DEL LEADERBOARD VISUAL EN PANTALLA
+// ==========================================
+// VISUALIZACIÓN EN PANTALLA Y ORDENAMIENTO
+// ==========================================
+
 let columnaOrdenadaActual = "";
 let ordenAscendente = true;
 
@@ -398,7 +393,6 @@ function mostrarLeaderboardEnPantalla() {
   if (!cuerpo) return;
   cuerpo.innerHTML = "";
 
-  // Filtrado en vivo de la tabla según los tags superiores seleccionados
   const registrosFiltrados = historialTiempos.filter((reg) => {
     const letraClase = reg.CLASE ? reg.CLASE.toUpperCase() : "D";
     return (
@@ -413,15 +407,12 @@ function mostrarLeaderboardEnPantalla() {
   }
 
   if (registrosFiltrados.length === 0) {
-    // 🛠️ AJUSTADO: colspan="10" para abarcar la columna de Circuito correctamente
     cuerpo.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:#666;">No hay tiempos registrados para los filtros activos.</td></tr>`;
     return;
   }
 
-  // Pintar filas simplificadas tal como Excel
   registrosFiltrados.forEach((reg) => {
     const fila = document.createElement("tr");
-
     fila.innerHTML = `
       <td style="color:#00ccff; font-weight:bold; text-align:center;">${reg.ID}</td>
       <td style="color:#ffcc00; font-weight:bold;">${reg.CIRCUITO || "N/A"}</td> 
@@ -449,7 +440,6 @@ function ordenarLeaderboard(columna) {
   historialTiempos.sort((a, b) => {
     let valA = a[columna];
     let valB = b[columna];
-
     if (valA === undefined || valA === null) valA = "";
     if (valB === undefined || valB === null) valB = "";
 
@@ -461,6 +451,25 @@ function ordenarLeaderboard(columna) {
       return ordenAscendente ? valA - valB : valB - valA;
     }
   });
-
   mostrarLeaderboardEnPantalla();
 }
+
+// ==========================================
+// 🚀 INICIALIZACIÓN DE CARGA (AL FINAL)
+// ==========================================
+
+fetch("autos_fh6.json", {
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+  },
+})
+  .then((res) => res.json())
+  .then((data) => {
+    todosLosAutos = data;
+    inicializarYCrearFiltros();
+    filtrarAutos();
+    configurarAccionesMasivas();
+    actualizarBotonExportar();
+    mostrarLeaderboardEnPantalla();
+  })
+  .catch((err) => console.error("Error cargando el archivo JSON:", err));
