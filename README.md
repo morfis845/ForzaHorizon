@@ -8,7 +8,7 @@ Disfruta de la versión en vivo aquí: **[https://morfis845.github.io/ForzaHoriz
 
 ## 📝 ¿Qué es este proyecto?
 
-Este sistema resuelve el problema de elegir qué auto usar en Forza Horizon mediante una ruleta mecánica interactiva tipo _slot machine_. A diferencia de una ruleta común, esta lee una base de datos local en formato JSON y te permite filtrar tu garaje por **País de origen**, **Tipo de vehículo** o **Clase de rendimiento (D a X)** antes de girar.
+Este sistema resuelve el problema de elegir qué auto usar en Forza Horizon mediante una ruleta mecánica interactiva tipo _slot machine_. A diferencia de una ruleta común, esta lee una base de datos local en formato JSON y te permite filtrar tu garaje por **País de origen**, **Tipo de vehículo** o **Clase de rendimiento (D a R)** antes de girar.
 
 Una vez que la ruleta selecciona un auto al azar, la aplicación despliega un módulo dinámico de telemetría para que pongas a prueba el vehículo en la pista e ingreses tus métricas competitivas directas, guardándolas automáticamente en un Leaderboard local permanente.
 
@@ -39,7 +39,7 @@ Presiona el botón **GIRAR**. El rodillo comenzará a moverse rápidamente y se 
 
 ### Paso 3: Registro Único de Telemetría
 
-Lleva el auto seleccionado a la pista. A diferencia de sistemas anteriores, **no es necesario realizar múltiples fases de pruebas**. Completarás una única carrera de prueba para medir el rendimiento puro del coche. Tras la carrera, llena el formulario en pantalla con los siguientes datos obligatorios:
+Lleva el auto seleccionado a la pista. Completarás una única carrera de prueba para medir el rendimiento puro del coche. Tras la carrera, llena el formulario en pantalla con los siguientes datos obligatorios:
 
 1. Digita el nombre del **Circuito** o pista de la prueba.
 2. Ingresa manualmente la **Tracción** con la que configuraste el coche (`AWD`, `RWD`, `FWD`).
