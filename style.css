@@ -244,18 +244,18 @@ button:active {
   box-shadow: 0 1px 0 #0099cc;
 }
 
-/* --- INTERFAZ DEL MODAL (FORMULARIO EMERGENTE) --- */
+/* --- INTERFAZ DEL MODAL MEJORADA (ESTILO POP-UP HUD COBERTURA TOTAL) --- */
 .modal-overlay {
-  position: fixed;
+  position: fixed; /* Forzamos a que flote por encima de absolutamente todo */
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.93); /* Fondo oscuro semitransparente premium */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 9999; /* Número muy alto para que no se mezcle con los filtros ni botones */
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -269,39 +269,41 @@ button:active {
 .modal-content {
   background: #111113;
   border: 2px solid #ff0055;
-  box-shadow: 0 0 30px rgba(255, 0, 85, 0.3);
+  box-shadow: 0 0 35px rgba(255, 0, 85, 0.4);
   width: 90%;
-  max-width: 600px;
-  border-radius: 8px;
-  padding: 25px;
-  text-align: left;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  max-height: 92vh; /* Evita que se salga de pantallas pequeñas */
+  overflow-y: auto; /* Si el celular es muy chico, permite hacer scroll interno */
 }
 
 .modal-content h3 {
   margin: 0 0 5px 0;
-  font-size: 22px;
+  font-size: 20px;
   color: #fff;
   text-transform: uppercase;
   font-style: italic;
+  line-height: 1.2;
 }
 
 .modal-sub {
-  color: #888;
-  font-size: 13px;
-  margin-bottom: 20px;
+  color: #aaa;
+  font-size: 12px;
+  margin-bottom: 15px;
   font-family: sans-serif;
 }
 
+/* Formularios en Bloques Verticales Limpios */
 .form-grid {
   display: flex;
-  gap: 15px;
+  flex-direction: column; /* Cambiado a columna para que no se aplaste de lado en móvil */
+  gap: 12px;
   margin-bottom: 15px;
 }
 
 .form-group {
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -311,34 +313,29 @@ button:active {
   font-size: 11px;
   color: #00ccff;
   text-transform: uppercase;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   font-family: sans-serif;
+  font-weight: bold;
 }
 
-.form-group input,
-.form-inline input {
-  background: #1d1d22;
+.form-group input {
+  background: #16161a;
   border: 1px solid #444;
   color: white;
-  padding: 8px;
-  border-radius: 4px;
-  font-family: sans-serif;
+  padding: 10px;
+  border-radius: 6px;
   font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.form-group input:focus,
-.form-inline input:focus {
-  border-color: #00ccff;
-  outline: none;
-}
-
+/* Contenedores de las Fases */
 .fase-bloque {
   border-left: 4px solid #fff;
-  padding-left: 12px;
-  margin-bottom: 15px;
   background: #16161a;
-  padding: 10px;
-  border-radius: 0 4px 4px 0;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 0 8px 8px 0;
 }
 .fase-bloque.f1 {
   border-color: #44546a;
@@ -354,122 +351,98 @@ button:active {
   margin: 0 0 10px 0;
   font-size: 13px;
   color: #fff;
+  text-transform: uppercase;
 }
 
+/* Estructura interna de los inputs de las fases (PI, Tiempo, Vueltas) */
 .form-inline {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Divide la fila exactamente en 3 columnas iguales */
+  gap: 8px;
 }
 
 .form-inline label {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-width: 80px;
+}
+
+.form-inline input {
+  background: #1d1d22;
+  border: 1px solid #444;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-inline input:focus,
+.form-group input:focus {
+  border-color: #00ccff;
+  outline: none;
 }
 
 .modal-botones {
   display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 25px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .modal-botones button {
-  padding: 10px 25px;
+  flex: 1; /* Hace que los botones de Guardar y Descartar midan lo mismo a lo ancho */
+  padding: 12px;
   font-size: 14px;
-  transform: none;
-  box-shadow: none;
+  font-weight: bold;
+  font-style: italic;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
 }
 
 .btn-cancelar {
-  background: #333;
-  color: #aaa;
+  background: #2b2b30;
+  color: #ff0055;
 }
-.btn-cancelar:hover {
-  background: #444;
-  color: #fff;
-}
-
 .btn-guardar {
   background: #ff0055;
   color: white;
 }
-.btn-peligro {
-  background: #222;
-  color: #888;
-  border: 1px solid #444;
-  padding: 15px 30px;
-  font-size: 16px;
-  font-weight: bold;
-  font-style: italic;
-  cursor: pointer;
-  border-radius: 5px;
-  transform: skewX(-15deg);
-  box-shadow: 0 5px 0 #111;
-  transition: all 0.1s ease;
-}
 
-.btn-peligro:hover {
-  background: #ff0055;
-  color: white;
-  border-color: #ff0055;
-  box-shadow: 0 5px 0 #b3003b;
-}
-
-.btn-peligro:active {
-  transform: skewX(-15deg) translateY(4px);
-  box-shadow: 0 1px 0 #b3003b;
-}
-/* --- ADAPTACIÓN ULTRA-MÓVIL (RESPONSIVE) --- */
+/* --- AJUSTES EXTRA RESPONSIVE PARA EL RESTO DE LA WEB --- */
 @media (max-width: 600px) {
+  .contenedor {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .titulo {
-    font-size: 1.8rem; /* Letras más pequeñas en el título para que no se corte */
-    margin-bottom: 10px;
+    font-size: 1.8rem;
+    text-align: center;
   }
 
   .slot-container {
-    width: 100%; /* La ruleta ahora ocupa el ancho del cel sin romperse */
-    max-width: 340px;
+    width: 100%;
+    max-width: 100%;
     height: 100px;
   }
 
   .auto-card {
-    height: 100px; /* Reducimos ligeramente la altura para pantallas pequeñas */
-  }
-
-  /* Ajustamos la variable en CSS por si acaso */
-  .rodillo .auto-card .modelo {
-    font-size: 15px; /* Evita que los nombres largos de autos se amontonen */
+    height: 100px;
   }
 
   .linea-acciones {
-    flex-direction: column; /* Los botones se ponen uno abajo del otro en vertical */
-    gap: 10px;
+    flex-direction: column;
     width: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
+    gap: 8px;
+    margin-top: 15px;
   }
 
-  button,
-  .btn-peligro {
-    width: 100%; /* Botones a lo ancho para que sea fácil tocarlos con el pulgar */
-    padding: 12px 20px;
-    font-size: 16px;
-  }
-
-  .modal-content {
-    width: 95%;
-    padding: 15px;
-  }
-
-  .form-inline {
-    flex-direction: column; /* Los campos de las Fases se alinean en lista vertical */
-    gap: 5px;
-  }
-
-  .form-inline label {
+  .linea-acciones button {
     width: 100%;
+    padding: 14px;
+    font-size: 15px;
   }
 }
