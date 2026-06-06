@@ -540,6 +540,14 @@ button:active {
     height: 100px;
   }
 
+  /* Aseguramos que el contenedor de los botones principales se apile */
+  .acciones-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
   .linea-acciones {
     flex-direction: column;
     width: 100%;
@@ -551,5 +559,12 @@ button:active {
     width: 100%;
     padding: 14px;
     font-size: 16px;
+  }
+
+  /* Evita el zoom automático incómodo en iOS/Android al escribir */
+  .form-group input,
+  .form-inline input {
+    font-size: 16px !important;
+    padding: 12px 10px;
   }
 }
