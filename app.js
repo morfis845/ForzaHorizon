@@ -288,7 +288,6 @@ function abrirModalTiempos(auto) {
   }
 
   document.getElementById("f1-pi").value = "";
-  document.getElementById("f1-pi").placeholder = `Ej: PI en ${claseLimpia}`;
   document.getElementById("f1-tiempo").value = "";
   document.getElementById("f1-vueltas").value = "";
   document.getElementById("f2-pi").value = "";
