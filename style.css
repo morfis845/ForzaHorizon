@@ -15,6 +15,8 @@ body {
   text-align: center;
   width: 100%;
   max-width: 900px;
+  display: flex;
+  flex-direction: column; /* Organiza todo el layout en bloques hacia abajo */
 }
 
 .titulo {
@@ -41,7 +43,6 @@ body {
   margin-bottom: 15px;
 }
 
-/* Alinea el título h3 y sus botones en la misma fila */
 .cabecera-filtro {
   display: flex;
   justify-content: space-between;
@@ -61,7 +62,6 @@ body {
   gap: 6px;
 }
 
-/* Botones pequeños para los filtros por categoría */
 .btn-mini {
   background: #222;
   color: #aaa;
@@ -72,8 +72,6 @@ body {
   font-weight: bold;
   border-radius: 3px;
   cursor: pointer;
-  transform: none;
-  box-shadow: none;
   transition: all 0.2s ease;
 }
 
@@ -191,7 +189,14 @@ body {
   margin-top: 5px;
 }
 
-/* Botón principal girar */
+.linea-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
 button {
   background: #ff0055;
   color: white;
@@ -212,10 +217,29 @@ button:active {
   box-shadow: 0 1px 0 #b3003b;
 }
 
+.btn-secundario {
+  background: #00ccff;
+  color: #000;
+  box-shadow: 0 5px 0 #0099cc;
+}
+.btn-secundario:active {
+  box-shadow: 0 1px 0 #0099cc;
+}
+
+.btn-peligro {
+  background: #333;
+  color: #ff0055;
+  border: 1px solid #444;
+  box-shadow: 0 5px 0 #222;
+}
+.btn-peligro:active {
+  box-shadow: 0 1px 0 #222;
+}
+
 #resultado {
-  margin-top: 25px;
+  margin-top: 15px;
   font-size: 24px;
-  height: 30px;
+  height: 35px;
   color: #00ccff;
 }
 
@@ -226,36 +250,19 @@ button:active {
   background: #333;
   border-radius: 4px;
 }
-/* ... (Mantén todo tu CSS anterior y agrega lo siguiente al final) ... */
 
-.linea-acciones {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 5px;
-}
-
-.btn-secundario {
-  background: #00ccff;
-  color: #000;
-  box-shadow: 0 5px 0 #0099cc;
-}
-.btn-secundario:active {
-  box-shadow: 0 1px 0 #0099cc;
-}
-
-/* --- INTERFAZ DEL MODAL MEJORADA (ESTILO POP-UP HUD COBERTURA TOTAL) --- */
+/* --- INTERFAZ DEL MODAL (ESTILO POP-UP HUD COBERTURA TOTAL) --- */
 .modal-overlay {
-  position: fixed; /* Forzamos a que flote por encima de absolutamente todo */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.93); /* Fondo oscuro semitransparente premium */
+  background: rgba(0, 0, 0, 0.93);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Número muy alto para que no se mezcle con los filtros ni botones */
+  z-index: 9999;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -275,8 +282,8 @@ button:active {
   border-radius: 12px;
   padding: 20px;
   box-sizing: border-box;
-  max-height: 92vh; /* Evita que se salga de pantallas pequeñas */
-  overflow-y: auto; /* Si el celular es muy chico, permite hacer scroll interno */
+  max-height: 92vh;
+  overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -295,10 +302,9 @@ button:active {
   font-family: sans-serif;
 }
 
-/* Formularios en Bloques Verticales Limpios */
 .form-grid {
   display: flex;
-  flex-direction: column; /* Cambiado a columna para que no se aplaste de lado en móvil */
+  flex-direction: column;
   gap: 12px;
   margin-bottom: 15px;
 }
@@ -329,13 +335,13 @@ button:active {
   box-sizing: border-box;
 }
 
-/* Contenedores de las Fases */
 .fase-bloque {
   border-left: 4px solid #fff;
   background: #16161a;
   padding: 12px;
   margin-bottom: 12px;
   border-radius: 0 8px 8px 0;
+  text-align: left;
 }
 .fase-bloque.f1 {
   border-color: #44546a;
@@ -354,10 +360,9 @@ button:active {
   text-transform: uppercase;
 }
 
-/* Estructura interna de los inputs de las fases (PI, Tiempo, Vueltas) */
 .form-inline {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* Divide la fila exactamente en 3 columnas iguales */
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
 }
 
@@ -391,7 +396,7 @@ button:active {
 }
 
 .modal-botones button {
-  flex: 1; /* Hace que los botones de Guardar y Descartar midan lo mismo a lo ancho */
+  flex: 1;
   padding: 12px;
   font-size: 14px;
   font-weight: bold;
@@ -399,6 +404,8 @@ button:active {
   border-radius: 6px;
   cursor: pointer;
   border: none;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-cancelar {
@@ -410,50 +417,18 @@ button:active {
   color: white;
 }
 
-/* --- AJUSTES EXTRA RESPONSIVE PARA EL RESTO DE LA WEB --- */
-@media (max-width: 600px) {
-  .contenedor {
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .titulo {
-    font-size: 1.8rem;
-    text-align: center;
-  }
-
-  .slot-container {
-    width: 100%;
-    max-width: 100%;
-    height: 100px;
-  }
-
-  .auto-card {
-    height: 100px;
-  }
-
-  .linea-acciones {
-    flex-direction: column;
-    width: 100%;
-    gap: 8px;
-    margin-top: 15px;
-  }
-
-  .linea-acciones button {
-    width: 100%;
-    padding: 14px;
-    font-size: 15px;
-  }
-}
-/* --- ESTILOS DEL LEADERBOARD EN VIVO --- */
+/* --- ESTILOS DEL LEADERBOARD EN VIVO (MÁXIMO AJUSTE EN DESPEJE PC) --- */
 .leaderboard-seccion {
-  margin-top: 40px;
+  margin-top: 30px;
   background: #111113;
-  border: 1px solid #333;
+  border: 1px solid #232328;
   border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  width: 100%;
+  clear: both;
+  flex-basis: 100%;
+  box-sizing: border-box;
 }
 
 .cabecera-tabla {
@@ -461,7 +436,7 @@ button:active {
   justify-content: space-between;
   align-items: center;
   border-bottom: 2px solid #ff0055;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   margin-bottom: 15px;
 }
 
@@ -470,17 +445,19 @@ button:active {
   color: #fff;
   font-style: italic;
   margin: 0;
+  letter-spacing: 1px;
 }
 
 #total-registros {
   font-size: 12px;
   color: #00ccff;
   font-weight: bold;
+  font-family: sans-serif;
 }
 
 .tabla-scroll {
   width: 100%;
-  overflow-x: auto; /* Scroll horizontal automático en móviles */
+  overflow-x: auto;
   border-radius: 4px;
 }
 
@@ -491,7 +468,7 @@ button:active {
   font-family: sans-serif;
   font-size: 13px;
   color: #ccc;
-  min-width: 800px; /* Asegura que mantenga forma de tabla en pantallas chicas */
+  min-width: 850px;
 }
 
 #tabla-leaderboard th {
@@ -512,35 +489,67 @@ button:active {
 }
 
 #tabla-leaderboard td {
-  padding: 10px;
+  padding: 12px 10px;
   border-bottom: 1px solid #1d1d22;
 }
 
 #tabla-leaderboard tr:nth-child(even) {
-  background: #141417; /* Filas alternadas oscuras */
+  background: #141417;
 }
 
 #tabla-leaderboard tr:hover {
-  background: rgba(255, 0, 85, 0.1); /* Resaltado al pasar el mouse */
+  background: rgba(255, 0, 85, 0.08);
   color: #fff;
 }
 
-/* Colores dinámicos en la tabla para los estados */
 .status-tag {
-  padding: 2px 6px;
+  padding: 4px 8px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: bold;
 }
 .status-good {
-  background: rgba(0, 204, 255, 0.2);
+  background: rgba(0, 204, 255, 0.15);
   color: #00ccff;
 }
 .status-fire {
-  background: rgba(255, 0, 85, 0.2);
+  background: rgba(255, 0, 85, 0.15);
   color: #ff0055;
 }
 .status-bad {
-  background: rgba(150, 150, 150, 0.2);
-  color: #888;
+  background: rgba(150, 150, 150, 0.15);
+  color: #999;
+}
+
+/* --- RESPONSIVE GENERAL MOBILES --- */
+@media (max-width: 600px) {
+  .contenedor {
+    padding: 5px;
+  }
+
+  .titulo {
+    font-size: 1.8rem;
+  }
+
+  .slot-container {
+    width: 100%;
+    height: 100px;
+  }
+
+  .auto-card {
+    height: 100px;
+  }
+
+  .linea-acciones {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .linea-acciones button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
 }

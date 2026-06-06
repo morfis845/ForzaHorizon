@@ -33,6 +33,7 @@ fetch("autos_fh6.json")
     filtrarAutos();
     configurarAccionesMasivas();
     actualizarBotonExportar();
+    mostrarLeaderboardEnPantalla(); // Renderiza el historial inicial en la tabla
   });
 
 function actualizarBotonExportar() {
@@ -117,9 +118,9 @@ function filtrarAutos() {
   });
   txtContador.innerText = `Autos disponibles en el filtro: ${autosFiltrados.length}`;
   construirRodilloVisual();
+  mostrarLeaderboardEnPantalla(); // Hace que la tabla obedezca los filtros superiores
 }
 
-// 3. Configuración de botones de activación masiva por categoría
 function configurarAccionesMasivas() {
   const activarCategoria = (categoria, setDestino, contenedor) => {
     if (girando) return;
@@ -150,7 +151,6 @@ function configurarAccionesMasivas() {
     .addEventListener("click", () =>
       desactivarCategoria(paisesActivos, contenedorPais),
     );
-
   document
     .getElementById("btn-activar-tipo")
     .addEventListener("click", () =>
@@ -161,7 +161,6 @@ function configurarAccionesMasivas() {
     .addEventListener("click", () =>
       desactivarCategoria(tiposActivos, contenedorTipo),
     );
-
   document
     .getElementById("btn-activar-clase")
     .addEventListener("click", () =>
@@ -201,27 +200,23 @@ function construirRodilloVisual() {
   });
 }
 
-// 4. Mecánica de la Ruleta y captura del ganador
-// 4. Mecánica de la Ruleta y captura del ganador corregida
-// 4. Mecánica de la Ruleta Optimizada para PC y Móviles (GPU Accelerated)
-document.getElementById("btn-girar").addEventListener("click", () => {
+// 4. Mecánica de la Ruleta (Vinculada al ID de tu nuevo HTML corregido: "btn-grid-girar")
+document.getElementById("btn-grid-girar").addEventListener("click", () => {
   if (girando || autosFiltrados.length === 0) return;
   girando = true;
   document.getElementById("resultado").innerText = "";
   construirRodilloVisual();
 
-  // Forzar al navegador a procesar el render antes de animar
   rodillo.getBoundingClientRect();
 
   const totalRenderizados = rodillo.children.length;
-  const minOpciones = Math.min(totalRenderizados, 20); // Reducimos un poco el viaje en móvil para evitar lag
+  const minOpciones = Math.min(totalRenderizados, 20);
   const maxOpciones = Math.min(totalRenderizados - 5, 50);
 
   const indiceGanador =
     Math.floor(Math.random() * (maxOpciones - minOpciones)) + minOpciones;
   const desplazamientoPixeles = indiceGanador * ALTURA_CARD;
 
-  // Usamos translate3d para activar la GPU del celular y que vaya a 60fps sin tirones
   rodillo.style.transition = "transform 4s cubic-bezier(0.1, 0.9, 0.2, 1)";
   rodillo.style.transform = `translate3d(0, -${desplazamientoPixeles}px, 0)`;
 
@@ -253,13 +248,11 @@ document.getElementById("btn-girar").addEventListener("click", () => {
       `¡GANASTE: ${autoGanadorActual.modelo}!`;
     girando = false;
 
-    // Un pequeño delay extra para que el sistema móvil procese el fin de la animación
     setTimeout(() => abrirModalTiempos(autoGanadorActual), 1200);
   }, 4000);
 });
 
-// --- 5. LÓGICA DEL FORMULARIO DE TIEMPOS (MODAL) ---
-
+// 5. LÓGICA DEL FORMULARIO DE TIEMPOS (MODAL)
 function abrirModalTiempos(auto) {
   document.getElementById("modal-titulo-auto").innerText =
     `${auto.marca} - ${auto.modelo}`;
@@ -267,34 +260,35 @@ function abrirModalTiempos(auto) {
   const inputTipo = document.getElementById("input-tipo");
   const inputPais = document.getElementById("input-pais");
 
-  // Rellenar Tipo
   if (auto.tipo && auto.tipo.trim() !== "") {
     inputTipo.value = auto.tipo;
     inputTipo.readOnly = true;
     inputTipo.style.opacity = "0.6";
-    inputTipo.style.background = "#16161a";
   } else {
     inputTipo.value = "";
     inputTipo.readOnly = false;
     inputTipo.style.opacity = "1";
-    inputTipo.style.background = "#1d1d22";
   }
 
-  // Rellenar País
   if (auto.pais && auto.pais.trim() !== "") {
     inputPais.value = auto.pais;
     inputPais.readOnly = true;
     inputPais.style.opacity = "0.6";
-    inputPais.style.background = "#16161a";
   } else {
     inputPais.value = "";
     inputPais.readOnly = false;
     inputPais.style.opacity = "1";
-    inputPais.style.background = "#1d1d22";
   }
 
-  // Limpiar campos de telemetría para la nueva carrera
-  document.getElementById("f1-pi").value = auto.clase || "";
+  // Extraer la letra limpia de la clase (ej: "Clase B" -> "B")
+  let claseLimpia = "600";
+  if (auto.clase) {
+    const partes = auto.clase.trim().split(" ");
+    claseLimpia = partes[partes.length - 1].toUpperCase();
+  }
+
+  document.getElementById("f1-pi").value = "";
+  document.getElementById("f1-pi").placeholder = `Ej: PI en ${claseLimpia}`;
   document.getElementById("f1-tiempo").value = "";
   document.getElementById("f1-vueltas").value = "";
   document.getElementById("f2-pi").value = "";
@@ -311,14 +305,13 @@ document.getElementById("btn-modal-cancelar").addEventListener("click", () => {
   modalTiempos.classList.remove("activo");
 });
 
-// Procesamiento matemático y almacenamiento
+// Procesamiento matemático y almacenamiento corregido sin duplicaciones
 document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   e.preventDefault();
 
   const tStock = document.getElementById("f1-tiempo").value;
   const tProject = document.getElementById("f3-tiempo").value;
 
-  // Convertidor mm:ss.000 a segundos flotantes
   const convertirASegundos = (str) => {
     const partes = str.split(":");
     if (partes.length < 2) return parseFloat(str) || 0;
@@ -337,7 +330,6 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   if (delta > 6) estado = "🔥 Matagigantes";
   else if (delta < 3) estado = "❌ Inconducible";
 
-  // ... (Dentro de tu form-tiempos submit listener, actualiza el objeto nuevoRegistro)
   const nuevoRegistro = {
     ID: historialTiempos.length + 1,
     MARCA: autoGanadorActual.marca,
@@ -358,27 +350,23 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
     "DELTA TOTAL (s)": `${delta.toFixed(3)}s`,
     "EFICIENCIA PI": `${eficiencia} PI/s`,
     ESTADO: estado,
-    // AUXILIARES NUMÉRICOS PARA ORDENACIÓN LIMPIA
     DELTA_NUM: delta,
     EFICIENCIA_NUM: parseFloat(eficiencia),
   };
 
   historialTiempos.push(nuevoRegistro);
   localStorage.setItem("forza_leaderboard", JSON.stringify(historialTiempos));
+
   actualizarBotonExportar();
-  mostrarLeaderboardEnPantalla(); // <--- NUEVO: Redibuja la tabla al guardar
+  mostrarLeaderboardEnPantalla();
 
   modalTiempos.classList.remove("activo");
-
-  historialTiempos.push(nuevoRegistro);
-  localStorage.setItem("forza_leaderboard", JSON.stringify(historialTiempos));
-  actualizarBotonExportar();
-
-  modalTiempos.classList.remove("activo");
-  alert(`¡Datos de ${autoGanadorActual.modelo} guardados exitosamente!`);
+  setTimeout(() => {
+    alert(`¡Datos de ${autoGanadorActual.modelo} guardados exitosamente!`);
+  }, 100);
 });
 
-// --- 6. EXPORTACIÓN A EXCEL ---
+// 6. EXPORTACIÓN A EXCEL
 btnExportar.addEventListener("click", () => {
   if (historialTiempos.length === 0) {
     alert(
@@ -386,58 +374,47 @@ btnExportar.addEventListener("click", () => {
     );
     return;
   }
-
   const hojaLeaderboard = XLSX.utils.json_to_sheet(historialTiempos);
   const libroTrabajo = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
+  XXLSX.utils.book_append_sheet(
     libroTrabajo,
     hojaLeaderboard,
     "Leaderboard General",
   );
-  XLSX.writeFile(libroTrabajo, "Forza_6_Live_Leaderboard.xlsx");
+  XXLSX.writeFile(libroTrabajo, "Forza_6_Live_Leaderboard.xlsx");
 });
-// --- 7. LÓGICA PARA LIMPIAR EL LEADERBOARD ---
+
+// 7. LIMPIAR EL LEADERBOARD
 document.getElementById("btn-limpiar").addEventListener("click", () => {
   if (historialTiempos.length === 0) {
     alert("El Leaderboard ya está completamente vacío.");
     return;
   }
 
-  // Alerta de seguridad para evitar accidentes
   const confirmarBorrado = confirm(
-    `⚠️ ¡ATENCIÓN! Está a punto de borrar permanentemente los ${historialTiempos.length} autos registrados en su tabla de tiempos.\n\n¿Desea continuar?`,
+    `⚠️ ¡ATENCIÓN! Está a punto de borrar permanentemente los ${historialTiempos.length} autos registrados.\n\n¿Desea continuar?`,
   );
 
   if (confirmarBorrado) {
-    // 1. Vaciar el arreglo en memoria rápida
     historialTiempos = [];
-
-    // 2. Limpiar el almacenamiento del navegador
     localStorage.removeItem("forza_leaderboard");
-
-    // 3. Actualizar la interfaz gráfica
     actualizarBotonExportar();
-
-    alert(
-      "📋 El Leaderboard ha sido reiniciado con éxito. ¡Listo para una nueva temporada!",
-    );
+    mostrarLeaderboardEnPantalla();
+    alert("📋 El Leaderboard ha sido reiniciado con éxito.");
   }
 });
-// --- 8. LÓGICA DE CONTROL DEL LEADERBOARD VISUAL ---
+
+// 8. LÓGICA DE CONTROL DEL LEADERBOARD VISUAL
 let columnaOrdenadaActual = "";
 let ordenAscendente = true;
 
-// Llama a esta función al iniciar la app para pintar datos previos
-// Agrégala dentro del bloque final del .then(data => { ... mostrarLeaderboardEnPantalla(); })
 function mostrarLeaderboardEnPantalla() {
   const cuerpo = document.getElementById("cuerpo-tabla");
   const txtTotal = document.getElementById("total-registros");
+  if (!cuerpo) return;
   cuerpo.innerHTML = "";
 
-  // FILTRADO DINÁMICO: La tabla obedece a los mismos tags de arriba
   const registrosFiltrados = historialTiempos.filter((reg) => {
-    // Buscamos la clase en el auto original para emparejar
     const autoOriginal =
       todosLosAutos.find((a) => a.modelo === reg.MODELO) || {};
     let letraAuto = "D";
@@ -445,7 +422,6 @@ function mostrarLeaderboardEnPantalla() {
       const partes = autoOriginal.clase.trim().split(" ");
       letraAuto = partes[partes.length - 1].toUpperCase();
     }
-
     return (
       paisesActivos.has(reg.PAÍS) &&
       tiposActivos.has(reg["TIPO / CATEGORÍA"]) &&
@@ -460,11 +436,8 @@ function mostrarLeaderboardEnPantalla() {
     return;
   }
 
-  // Pintar cada fila
   registrosFiltrados.forEach((reg) => {
     const fila = document.createElement("tr");
-
-    // Determinar clase estética del estado
     let claseEstado = "status-good";
     if (reg.ESTADO.includes("🔥")) claseEstado = "status-fire";
     if (reg.ESTADO.includes("❌")) claseEstado = "status-bad";
@@ -484,20 +457,18 @@ function mostrarLeaderboardEnPantalla() {
   });
 }
 
-// Función encargada de ordenar de mayor a menor o viceversa
 function ordenarLeaderboard(columna) {
   if (columnaOrdenadaActual === columna) {
-    ordenAscendente = !ordenAscendente; // Invierte el orden si repite clic
+    ordenAscendente = !ordenAscendente;
   } else {
     columnaOrdenadaActual = columna;
-    ordenAscendente = true; // Por defecto ascendente
+    ordenAscendente = true;
   }
 
   historialTiempos.sort((a, b) => {
     let valA = a[columna];
     let valB = b[columna];
 
-    // Manejo de ordenación numérica vs texto
     if (typeof valA === "string") {
       return ordenAscendente
         ? valA.localeCompare(valB)
@@ -509,11 +480,3 @@ function ordenarLeaderboard(columna) {
 
   mostrarLeaderboardEnPantalla();
 }
-
-// VINCULACIÓN CON LOS FILTROS EXISTENTES:
-// Para que la tabla se actualice al presionar tus tags de Países/Clases/Tipos,
-// busca tu función filtrarAutos() original y agrega al final de su bloque:
-// mostrarLeaderboardEnPantalla();
-
-// Igualmente, en tu botón de limpiar datos, dentro del "if(confirmarBorrado)" agrega:
-// mostrarLeaderboardEnPantalla();
