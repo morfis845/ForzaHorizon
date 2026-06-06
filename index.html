@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Forza Horizon 6 - Slot Wheelspin</title>
+    <title>Forza Horizon 6 - Slot Wheelspin & Leaderboard</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     
@@ -11,7 +12,6 @@
         <h1 class="titulo">SUPER WHEELSPIN</h1>
         
         <div class="filtros-seccion">
-            
             <div class="grupo-filtro">
                 <div class="cabecera-filtro">
                     <h3>Países</h3>
@@ -44,7 +44,6 @@
                 </div>
                 <div id="filtro-clase" class="tags-contenedor"></div>
             </div>
-
         </div>
         
         <p id="contador-autos">Cargando garaje...</p>
@@ -54,8 +53,67 @@
             <div class="rodillo" id="rodillo"></div>
         </div>
 
-        <button id="btn-girar">GIRAR</button>
+        <div class="linea-acciones">
+            <div class="linea-acciones">
+    <button id="btn-girar">GIRAR</button>
+    <button id="btn-exportar" class="btn-secundario">📥 Descargar Excel</button>
+    <button id="btn-limpiar" class="btn-peligro">🗑️ Limpiar Datos</button>
+</div>
+        </div>
+        
         <h2 id="resultado"></h2>
+    </div>
+
+    <div id="modal-tiempos" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-titulo-auto">Registrar Tiempos</h3>
+            <p class="modal-sub">Ingresa la telemetría obtenida en tus pruebas de calle:</p>
+            
+            <form id="form-tiempos">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Categoría/Tipo de Auto</label>
+                        <input type="text" id="input-tipo" placeholder="Ej: Retro Sports Cars">
+                    </div>
+                    <div class="form-group">
+                        <label>País de Origen</label>
+                        <input type="text" id="input-pais" placeholder="Ej: Japón">
+                    </div>
+                </div>
+
+                <div class="fase-bloque f1">
+                    <h4>Fase 1: Pure Stock</h4>
+                    <div class="form-inline">
+                        <label>PI: <input type="number" id="f1-pi" placeholder="615" required></label>
+                        <label>Tiempo: <input type="text" id="f1-tiempo" placeholder="01:25.450" required></label>
+                        <label>Vueltas: <input type="number" id="f1-vueltas" placeholder="4" required></label>
+                    </div>
+                </div>
+
+                <div class="fase-bloque f2">
+                    <h4>Fase 2: Tuned Base (Misma Clase)</h4>
+                    <div class="form-inline">
+                        <label>PI: <input type="number" id="f2-pi" placeholder="700" required></label>
+                        <label>Tiempo: <input type="text" id="f2-tiempo" placeholder="01:21.800" required></label>
+                        <label>Vueltas: <input type="number" id="f2-vueltas" placeholder="3" required></label>
+                    </div>
+                </div>
+
+                <div class="fase-bloque f3">
+                    <h4>Fase 3: Street Project (+1 Clase)</h4>
+                    <div class="form-inline">
+                        <label>PI: <input type="number" id="f3-pi" placeholder="800" required></label>
+                        <label>Tiempo: <input type="text" id="f3-tiempo" placeholder="01:17.200" required></label>
+                        <label>Vueltas: <input type="number" id="f3-vueltas" placeholder="5" required></label>
+                    </div>
+                </div>
+
+                <div class="modal-botones">
+                    <button type="button" id="btn-modal-cancelar" class="btn-cancelar">Descartar</button>
+                    <button type="submit" class="btn-guardar">Guardar Datos</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="app.js"></script>
