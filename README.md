@@ -2,7 +2,7 @@
 
 ¡Añade emoción a tus partidas de Forza Horizon! Esta aplicación web está diseñada para creadores de contenido, streamers o jugadores entusiastas que quieren añadir un sistema de desafíos aleatorios a sus sesiones de juego mediante una ruleta (_Wheelspin_) automatizada y un registro estricto de telemetría por circuitos.
 
-Disfruta de la versión en vivo aquí: **[👉 ENLACE A TU GITHUB PAGES AQUÍ]**
+Disfruta de la versión en vivo aquí: **[https://morfis845.github.io/ForzaHorizon/](https://morfis845.github.io/ForzaHorizon/)**
 
 ---
 
