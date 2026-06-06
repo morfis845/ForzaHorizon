@@ -7,7 +7,7 @@ const ALTURA_CARD = 120;
 // Estado del Auto Ganador Actual
 let autoGanadorActual = null;
 
-// Memoria Local: Carga el historial guardado en el navegador del usuario
+// Memoria Local: Carga el historial unificado guardado en el navegador
 let historialTiempos =
   JSON.parse(localStorage.getItem("forza_leaderboard")) || [];
 
@@ -33,11 +33,14 @@ fetch("autos_fh6.json")
     filtrarAutos();
     configurarAccionesMasivas();
     actualizarBotonExportar();
-    mostrarLeaderboardEnPantalla(); // Renderiza el historial inicial en la tabla
-  });
+    mostrarLeaderboardEnPantalla();
+  })
+  .catch((err) => console.error("Error cargando el archivo JSON:", err));
 
 function actualizarBotonExportar() {
-  btnExportar.innerText = `📥 Descargar Excel (${historialTiempos.length})`;
+  if (btnExportar) {
+    btnExportar.innerText = `📥 Descargar Excel (${historialTiempos.length})`;
+  }
 }
 
 // 2. Mapear datos y pintar tags interactivos
@@ -118,7 +121,7 @@ function filtrarAutos() {
   });
   txtContador.innerText = `Autos disponibles en el filtro: ${autosFiltrados.length}`;
   construirRodilloVisual();
-  mostrarLeaderboardEnPantalla(); // Hace que la tabla obedezca los filtros superiores
+  mostrarLeaderboardEnPantalla();
 }
 
 function configurarAccionesMasivas() {
@@ -200,7 +203,7 @@ function construirRodilloVisual() {
   });
 }
 
-// 4. Mecánica de la Ruleta (Vinculada al ID de tu nuevo HTML corregido: "btn-grid-girar")
+// 4. Mecánica de la Ruleta (Vinculada a tu id="btn-grid-girar")
 document.getElementById("btn-grid-girar").addEventListener("click", () => {
   if (girando || autosFiltrados.length === 0) return;
   girando = true;
@@ -252,13 +255,14 @@ document.getElementById("btn-grid-girar").addEventListener("click", () => {
   }, 4000);
 });
 
-// 5. LÓGICA DEL FORMULARIO DE TIEMPOS (MODAL)
+// 5. LÓGICA DEL FORMULARIO DE TIEMPOS MODIFICADA (DIRECTA)
 function abrirModalTiempos(auto) {
   document.getElementById("modal-titulo-auto").innerText =
     `${auto.marca} - ${auto.modelo}`;
 
   const inputTipo = document.getElementById("input-tipo");
   const inputPais = document.getElementById("input-pais");
+  const inputTraccion = document.getElementById("input-traccion");
 
   if (auto.tipo && auto.tipo.trim() !== "") {
     inputTipo.value = auto.tipo;
@@ -280,22 +284,22 @@ function abrirModalTiempos(auto) {
     inputPais.style.opacity = "1";
   }
 
-  // Extraer la letra limpia de la clase (ej: "Clase B" -> "B")
-  let claseLimpia = "600";
+  // Tracción manual vacía por defecto para llenado del usuario
+  inputTraccion.value = "";
+
+  // Extraer dinámicamente datos sugeridos del JSON base si existen
+  let piSugerido = "";
+  let claseSugerida = "";
   if (auto.clase) {
     const partes = auto.clase.trim().split(" ");
-    claseLimpia = partes[partes.length - 1].toUpperCase();
+    claseSugerida = partes[partes.length - 1].toUpperCase();
+    const numeroEncontrado = partes[0].replace(/\D/g, "");
+    if (numeroEncontrado) piSugerido = numeroEncontrado;
   }
 
-  document.getElementById("f1-pi").value = "";
-  document.getElementById("f1-tiempo").value = "";
-  document.getElementById("f1-vueltas").value = "";
-  document.getElementById("f2-pi").value = "";
-  document.getElementById("f2-tiempo").value = "";
-  document.getElementById("f2-vueltas").value = "";
-  document.getElementById("f3-pi").value = "";
-  document.getElementById("f3-tiempo").value = "";
-  document.getElementById("f3-vueltas").value = "";
+  document.getElementById("race-pi").value = piSugerido;
+  document.getElementById("race-tiempo").value = "";
+  document.getElementById("race-clase").value = claseSugerida;
 
   modalTiempos.classList.add("activo");
 }
@@ -304,53 +308,31 @@ document.getElementById("btn-modal-cancelar").addEventListener("click", () => {
   modalTiempos.classList.remove("activo");
 });
 
-// Procesamiento matemático y almacenamiento corregido sin duplicaciones
+// Guardado Limpio en Formato Plano (Formato idéntico a tu captura de Excel)
 document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const tStock = document.getElementById("f1-tiempo").value;
-  const tProject = document.getElementById("f3-tiempo").value;
-
-  const convertirASegundos = (str) => {
-    const partes = str.split(":");
-    if (partes.length < 2) return parseFloat(str) || 0;
-    return parseInt(partes[0]) * 60 + parseFloat(partes[1]);
-  };
-
-  const segStock = convertirASegundos(tStock);
-  const segProject = convertirASegundos(tProject);
-  const delta = segStock - segProject;
-
-  const piStock = parseInt(document.getElementById("f1-pi").value) || 0;
-  const piProject = parseInt(document.getElementById("f3-pi").value) || 0;
-  const eficiencia = delta > 0 ? ((piProject - piStock) / delta).toFixed(1) : 0;
-
-  let estado = "🟢 Equilibrado";
-  if (delta > 6) estado = "🔥 Matagigantes";
-  else if (delta < 3) estado = "❌ Inconducible";
+  const piValor = parseInt(document.getElementById("race-pi").value) || 0;
+  const tiempoValor = document.getElementById("race-tiempo").value.trim();
+  const claseValor = document
+    .getElementById("race-clase")
+    .value.trim()
+    .toUpperCase();
+  const traccionValor = document
+    .getElementById("input-traccion")
+    .value.trim()
+    .toUpperCase();
 
   const nuevoRegistro = {
     ID: historialTiempos.length + 1,
     MARCA: autoGanadorActual.marca,
     MODELO: autoGanadorActual.modelo,
-    "TIPO / CATEGORÍA": document.getElementById("input-tipo").value,
-    PAÍS: document.getElementById("input-pais").value,
-    TRACCIÓN: autoGanadorActual.traccion || "RWD",
-    "PI STOCK": piStock,
-    "TIEMPO STOCK": tStock,
-    "VUELTAS STOCK": parseInt(document.getElementById("f1-vueltas").value) || 0,
-    "PI TUNED": parseInt(document.getElementById("f2-pi").value) || 0,
-    "TIEMPO TUNED": document.getElementById("f2-tiempo").value,
-    "VUELTAS TUNED": parseInt(document.getElementById("f2-vueltas").value) || 0,
-    "PI PROJECT": piProject,
-    "TIEMPO PROJECT": tProject,
-    "VUELTAS PROJECT":
-      parseInt(document.getElementById("f3-vueltas").value) || 0,
-    "DELTA TOTAL (s)": `${delta.toFixed(3)}s`,
-    "EFICIENCIA PI": `${eficiencia} PI/s`,
-    ESTADO: estado,
-    DELTA_NUM: delta,
-    EFICIENCIA_NUM: parseFloat(eficiencia),
+    "TIPO / CATEGORÍA": document.getElementById("input-tipo").value.trim(),
+    PAÍS: document.getElementById("input-pais").value.trim(),
+    TRACCION: traccionValor,
+    PI: piValor,
+    TIEMPO: tiempoValor,
+    CLASE: claseValor,
   };
 
   historialTiempos.push(nuevoRegistro);
@@ -360,12 +342,13 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   mostrarLeaderboardEnPantalla();
 
   modalTiempos.classList.remove("activo");
+
   setTimeout(() => {
     alert(`¡Datos de ${autoGanadorActual.modelo} guardados exitosamente!`);
   }, 100);
 });
 
-// 6. EXPORTACIÓN A EXCEL
+// 6. EXPORTACIÓN LIMPIA A EXCEL (Estructura de columnas planas fijas)
 btnExportar.addEventListener("click", () => {
   if (historialTiempos.length === 0) {
     alert(
@@ -375,12 +358,12 @@ btnExportar.addEventListener("click", () => {
   }
   const hojaLeaderboard = XLSX.utils.json_to_sheet(historialTiempos);
   const libroTrabajo = XLSX.utils.book_new();
-  XXLSX.utils.book_append_sheet(
+  XLSX.utils.book_append_sheet(
     libroTrabajo,
     hojaLeaderboard,
     "Leaderboard General",
   );
-  XXLSX.writeFile(libroTrabajo, "Forza_6_Live_Leaderboard.xlsx");
+  XLSX.writeFile(libroTrabajo, "Forza_6_Live_Leaderboard.xlsx");
 });
 
 // 7. LIMPIAR EL LEADERBOARD
@@ -403,7 +386,7 @@ document.getElementById("btn-limpiar").addEventListener("click", () => {
   }
 });
 
-// 8. LÓGICA DE CONTROL DEL LEADERBOARD VISUAL
+// 8. CONTROL DEL LEADERBOARD VISUAL EN PANTALLA
 let columnaOrdenadaActual = "";
 let ordenAscendente = true;
 
@@ -413,44 +396,39 @@ function mostrarLeaderboardEnPantalla() {
   if (!cuerpo) return;
   cuerpo.innerHTML = "";
 
+  // Filtrado en vivo de la tabla según los tags superiores seleccionados
   const registrosFiltrados = historialTiempos.filter((reg) => {
-    const autoOriginal =
-      todosLosAutos.find((a) => a.modelo === reg.MODELO) || {};
-    let letraAuto = "D";
-    if (autoOriginal.clase) {
-      const partes = autoOriginal.clase.trim().split(" ");
-      letraAuto = partes[partes.length - 1].toUpperCase();
-    }
+    const letraClase = reg.CLASE ? reg.CLASE.toUpperCase() : "D";
     return (
       paisesActivos.has(reg.PAÍS) &&
       tiposActivos.has(reg["TIPO / CATEGORÍA"]) &&
-      clasesActivas.has(letraAuto)
+      clasesActivas.has(letraClase)
     );
   });
 
-  txtTotal.innerText = `${registrosFiltrados.length} de ${historialTiempos.length} autos mostrados`;
+  if (txtTotal) {
+    txtTotal.innerText = `${registrosFiltrados.length} de ${historialTiempos.length} autos mostrados`;
+  }
 
   if (registrosFiltrados.length === 0) {
     cuerpo.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:#666;">No hay tiempos registrados para los filtros activos.</td></tr>`;
     return;
   }
 
+  // Construcción de celdas planas ordenadas tal como la captura
   registrosFiltrados.forEach((reg) => {
     const fila = document.createElement("tr");
-    let claseEstado = "status-good";
-    if (reg.ESTADO.includes("🔥")) claseEstado = "status-fire";
-    if (reg.ESTADO.includes("❌")) claseEstado = "status-bad";
 
     fila.innerHTML = `
+      <td style="color:#00ccff; font-weight:bold; text-align:center;">${reg.ID}</td>
       <td style="font-weight:bold; color:#fff;">${reg.MARCA}</td>
       <td>${reg.MODELO}</td>
-      <td style="text-align:center;">${reg["PI STOCK"]}</td>
-      <td>${reg["TIEMPO STOCK"]}</td>
-      <td style="text-align:center;">${reg["PI PROJECT"]}</td>
-      <td>${reg["TIEMPO PROJECT"]}</td>
-      <td style="color:#00ccff; font-weight:bold;">${reg["DELTA TOTAL (s)"]}</td>
-      <td>${reg["EFICIENCIA PI"]}</td>
-      <td><span class="status-tag ${claseEstado}">${reg.ESTADO}</span></td>
+      <td>${reg["TIPO / CATEGORÍA"]}</td>
+      <td style="text-align:center;">${reg.PAÍS}</td>
+      <td style="text-align:center; color:#ff0055; font-weight:bold;">${reg.TRACCION || "N/A"}</td>
+      <td style="text-align:center; font-weight:bold; color:#fff;">${reg.PI}</td>
+      <td style="color:#00ccff; font-weight:bold;">${reg.TIEMPO}</td>
+      <td style="text-align:center; font-weight:bold; color:#fff;">${reg.CLASE}</td>
     `;
     cuerpo.appendChild(fila);
   });
@@ -467,6 +445,10 @@ function ordenarLeaderboard(columna) {
   historialTiempos.sort((a, b) => {
     let valA = a[columna];
     let valB = b[columna];
+
+    // Control preventivo si algún dato llega vacío
+    if (valA === undefined || valA === null) valA = "";
+    if (valB === undefined || valB === null) valB = "";
 
     if (typeof valA === "string") {
       return ordenAscendente

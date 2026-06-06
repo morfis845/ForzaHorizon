@@ -72,76 +72,73 @@
             
             <div class="tabla-scroll">
                 <table id="tabla-leaderboard">
-                    <thead>
-                        <tr>
-                            <th onclick="ordenarLeaderboard('MARCA')">Marca ↕️</th>
-                            <th onclick="ordenarLeaderboard('MODELO')">Modelo ↕️</th>
-                            <th onclick="ordenarLeaderboard('PI STOCK')">PI Stock ↕️</th>
-                            <th onclick="ordenarLeaderboard('TIEMPO STOCK')">Tiempo Stock ↕️</th>
-                            <th onclick="ordenarLeaderboard('PI PROJECT')">PI Proj ↕️</th>
-                            <th onclick="ordenarLeaderboard('TIEMPO PROJECT')">Tiempo Proj ↕️</th>
-                            <th onclick="ordenarLeaderboard('DELTA_NUM')">Delta (s) ↕️</th>
-                            <th onclick="ordenarLeaderboard('EFICIENCIA_NUM')">Eficiencia ↕️</th>
-                            <th onclick="ordenarLeaderboard('ESTADO')">Estado ↕️</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cuerpo-tabla">
-                        </tbody>
-                </table>
+  <thead>
+    <tr>
+      <th onclick="ordenarLeaderboard('ID')">ID</th>
+      <th onclick="ordenarLeaderboard('MARCA')">MARCA</th>
+      <th onclick="ordenarLeaderboard('MODELO')">MODELO</th>
+      <th onclick="ordenarLeaderboard('TIPO / CATEGORÍA')">TIPO / CATEGORÍA</th>
+      <th onclick="ordenarLeaderboard('PAÍS')">PAÍS</th>
+      <th onclick="ordenarLeaderboard('TRACCION')">TRACCION</th>
+      <th onclick="ordenarLeaderboard('PI')">PI</th>
+      <th onclick="ordenarLeaderboard('TIEMPO')">TIEMPO</th>
+      <th onclick="ordenarLeaderboard('CLASE')">CLASE</th>
+    </tr>
+  </thead>
+  <tbody id="cuerpo-tabla">
+    </tbody>
+</table>
             </div>
         </div>
 
-    </div> <div id="modal-tiempos" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="modal-titulo-auto">Registrar Tiempos</h3>
-            <p class="modal-sub">Ingresa la telemetría obtenida en tus pruebas de calle:</p>
-            
-            <form id="form-tiempos">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Categoría/Tipo de Auto</label>
-                        <input type="text" id="input-tipo" placeholder="Ej: Retro Sports Cars">
-                    </div>
-                    <div class="form-group">
-                        <label>País de Origen</label>
-                        <input type="text" id="input-pais" placeholder="Ej: Japón">
-                    </div>
-                </div>
+    <div id="modal-tiempos" class="modal-overlay">
+  <div class="modal-content">
+    <h3 id="modal-titulo-auto">MARCA - MODELO</h3>
+    <p class="modal-sub">Registrar tiempos y telemetría de la prueba</p>
 
-                <div class="fase-bloque f1">
-                    <h4>Fase 1: Pure Stock</h4>
-                    <div class="form-inline">
-                        <label>PI <input type="number" id="f1-pi" placeholder="615" required></label>
-                        <label>Tiempo <input type="text" id="f1-tiempo" placeholder="01:25.450" required></label>
-                        <label>Vueltas <input type="number" id="f1-vueltas" placeholder="4" required></label>
-                    </div>
-                </div>
-
-                <div class="fase-bloque f2">
-                    <h4>Fase 2: Tuned Base (Misma Clase)</h4>
-                    <div class="form-inline">
-                        <label>PI <input type="number" id="f2-pi" placeholder="700" required></label>
-                        <label>Tiempo <input type="text" id="f2-tiempo" placeholder="01:21.800" required></label>
-                        <label>Vueltas <input type="number" id="f2-vueltas" placeholder="3" required></label>
-                    </div>
-                </div>
-
-                <div class="fase-bloque f3">
-                    <h4>Fase 3: Street Project (+1 Clase)</h4>
-                    <div class="form-inline">
-                        <label>PI <input type="number" id="f3-pi" placeholder="800" required></label>
-                        <label>Tiempo <input type="text" id="f3-tiempo" placeholder="01:17.200" required></label>
-                        <label>Vueltas <input type="number" id="f3-vueltas" placeholder="5" required></label>
-                    </div>
-                </div>
-
-                <div class="modal-botones">
-                    <button type="button" id="btn-modal-cancelar" class="btn-cancelar">Descartar</button>
-                    <button type="submit" class="btn-guardar">Guardar Datos</button>
-                </div>
-            </form>
+    <form id="form-tiempos">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Categoría / Tipo de Auto</label>
+          <input type="text" id="input-tipo" placeholder="Ej: Retro Sports Cars" required />
         </div>
-    </div>
+        
+        <div class="form-group">
+          <label>País de Origen</label>
+          <input type="text" id="input-pais" placeholder="Ej: Japón" required />
+        </div>
+
+        <div class="form-group">
+          <label>Tracción</label>
+          <input type="text" id="input-traccion" placeholder="Ej: AWD, RWD, FWD" required />
+        </div>
+      </div>
+
+      <div class="fase-bloque f2">
+        <h4>Telemetría de la Carrera</h4>
+        <div class="form-inline">
+          <label>
+            <span style="font-size:11px; color:#00ccff; margin-bottom:4px; font-weight:bold;">PI</span>
+            <input type="number" id="race-pi" placeholder="Ej: 755" required />
+          </label>
+          <label>
+            <span style="font-size:11px; color:#00ccff; margin-bottom:4px; font-weight:bold;">TIEMPO</span>
+            <input type="text" id="race-tiempo" placeholder="01:27.786" required />
+          </label>
+          <label>
+            <span style="font-size:11px; color:#00ccff; margin-bottom:4px; font-weight:bold;">CLASE</span>
+            <input type="text" id="race-clase" placeholder="Ej: S1" required />
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-botones">
+        <button type="button" id="btn-modal-cancelar" class="btn-cancelar">Descartar</button>
+        <button type="submit" class="btn-guardar">Guardar Datos</button>
+      </div>
+    </form>
+  </div>
+</div>
 
     <script src="app.js"></script>
 </body>
