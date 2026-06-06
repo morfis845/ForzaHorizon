@@ -422,3 +422,54 @@ button:active {
   transform: skewX(-15deg) translateY(4px);
   box-shadow: 0 1px 0 #b3003b;
 }
+/* --- ADAPTACIÓN ULTRA-MÓVIL (RESPONSIVE) --- */
+@media (max-width: 600px) {
+  .titulo {
+    font-size: 1.8rem; /* Letras más pequeñas en el título para que no se corte */
+    margin-bottom: 10px;
+  }
+
+  .slot-container {
+    width: 100%; /* La ruleta ahora ocupa el ancho del cel sin romperse */
+    max-width: 340px;
+    height: 100px;
+  }
+
+  .auto-card {
+    height: 100px; /* Reducimos ligeramente la altura para pantallas pequeñas */
+  }
+
+  /* Ajustamos la variable en CSS por si acaso */
+  .rodillo .auto-card .modelo {
+    font-size: 15px; /* Evita que los nombres largos de autos se amontonen */
+  }
+
+  .linea-acciones {
+    flex-direction: column; /* Los botones se ponen uno abajo del otro en vertical */
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  button,
+  .btn-peligro {
+    width: 100%; /* Botones a lo ancho para que sea fácil tocarlos con el pulgar */
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .form-inline {
+    flex-direction: column; /* Los campos de las Fases se alinean en lista vertical */
+    gap: 5px;
+  }
+
+  .form-inline label {
+    width: 100%;
+  }
+}

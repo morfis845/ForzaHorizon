@@ -203,37 +203,42 @@ function construirRodilloVisual() {
 
 // 4. Mecánica de la Ruleta y captura del ganador
 // 4. Mecánica de la Ruleta y captura del ganador corregida
+// 4. Mecánica de la Ruleta Optimizada para PC y Móviles (GPU Accelerated)
 document.getElementById("btn-girar").addEventListener("click", () => {
   if (girando || autosFiltrados.length === 0) return;
   girando = true;
   document.getElementById("resultado").innerText = "";
   construirRodilloVisual();
-  rodillo.offsetHeight; // Forzar reflow de animación
+
+  // Forzar al navegador a procesar el render antes de animar
+  rodillo.getBoundingClientRect();
 
   const totalRenderizados = rodillo.children.length;
-  const minOpciones = Math.min(totalRenderizados, 30);
-  const maxOpciones = Math.min(totalRenderizados - 5, 120);
+  const minOpciones = Math.min(totalRenderizados, 20); // Reducimos un poco el viaje en móvil para evitar lag
+  const maxOpciones = Math.min(totalRenderizados - 5, 50);
 
   const indiceGanador =
     Math.floor(Math.random() * (maxOpciones - minOpciones)) + minOpciones;
   const desplazamientoPixeles = indiceGanador * ALTURA_CARD;
 
-  rodillo.style.transition = "transform 4.5s cubic-bezier(0.1, 0.9, 0.15, 1)";
-  rodillo.style.transform = `translateY(-${desplazamientoPixeles}px)`;
+  // Usamos translate3d para activar la GPU del celular y que vaya a 60fps sin tirones
+  rodillo.style.transition = "transform 4s cubic-bezier(0.1, 0.9, 0.2, 1)";
+  rodillo.style.transform = `translate3d(0, -${desplazamientoPixeles}px, 0)`;
 
   setTimeout(() => {
     const listaCardsRend = [...rodillo.querySelectorAll(".auto-card")];
-    // Extraemos únicamente el modelo, que está limpio de etiquetas extras
+    if (!listaCardsRend[indiceGanador]) {
+      girando = false;
+      return;
+    }
+
     const modeloGanador = listaCardsRend[indiceGanador]
       .querySelector(".modelo")
       .innerText.trim();
-
-    // Buscamos directamente por modelo en nuestro array de autos filtrados
     autoGanadorActual = autosFiltrados.find(
       (a) => a.modelo.trim() === modeloGanador,
     );
 
-    // Si por alguna razón extraña no lo encuentra, creamos el objeto de respaldo
     if (!autoGanadorActual) {
       autoGanadorActual = {
         marca: "Desconocida",
@@ -248,9 +253,9 @@ document.getElementById("btn-girar").addEventListener("click", () => {
       `¡GANASTE: ${autoGanadorActual.modelo}!`;
     girando = false;
 
-    // Abrir el formulario automático tras 1 segundo
-    setTimeout(() => abrirModalTiempos(autoGanadorActual), 1000);
-  }, 4500);
+    // Un pequeño delay extra para que el sistema móvil procese el fin de la animación
+    setTimeout(() => abrirModalTiempos(autoGanadorActual), 1200);
+  }, 4000);
 });
 
 // --- 5. LÓGICA DEL FORMULARIO DE TIEMPOS (MODAL) ---
