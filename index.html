@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Forza Horizon 6 - Slot Wheelspin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="contenedor">
+        <h1 class="titulo">SUPER WHEELSPIN</h1>
+        
+        <div class="filtros-seccion">
+            
+            <div class="grupo-filtro">
+                <div class="cabecera-filtro">
+                    <h3>Países</h3>
+                    <div class="botones-grupo">
+                        <button class="btn-mini" id="btn-activar-pais">🔄 Todo</button>
+                        <button class="btn-mini btn-mini-off" id="btn-desactivar-pais">❌ Nada</button>
+                    </div>
+                </div>
+                <div id="filtro-pais" class="tags-contenedor"></div>
+            </div>
+            
+            <div class="grupo-filtro">
+                <div class="cabecera-filtro">
+                    <h3>Tipos</h3>
+                    <div class="botones-grupo">
+                        <button class="btn-mini" id="btn-activar-tipo">🔄 Todo</button>
+                        <button class="btn-mini btn-mini-off" id="btn-desactivar-tipo">❌ Nada</button>
+                    </div>
+                </div>
+                <div id="filtro-tipo" class="tags-contenedor"></div>
+            </div>
+
+            <div class="grupo-filtro">
+                <div class="cabecera-filtro">
+                    <h3>Clases</h3>
+                    <div class="botones-grupo">
+                        <button class="btn-mini" id="btn-activar-clase">🔄 Todo</button>
+                        <button class="btn-mini btn-mini-off" id="btn-desactivar-clase">❌ Nada</button>
+                    </div>
+                </div>
+                <div id="filtro-clase" class="tags-contenedor"></div>
+            </div>
+
+        </div>
+        
+        <p id="contador-autos">Cargando garaje...</p>
+
+        <div class="slot-container">
+            <div class="marcador-linea"></div>
+            <div class="rodillo" id="rodillo"></div>
+        </div>
+
+        <button id="btn-girar">GIRAR</button>
+        <h2 id="resultado"></h2>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
