@@ -337,6 +337,7 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
   if (delta > 6) estado = "🔥 Matagigantes";
   else if (delta < 3) estado = "❌ Inconducible";
 
+  // ... (Dentro de tu form-tiempos submit listener, actualiza el objeto nuevoRegistro)
   const nuevoRegistro = {
     ID: historialTiempos.length + 1,
     MARCA: autoGanadorActual.marca,
@@ -357,7 +358,17 @@ document.getElementById("form-tiempos").addEventListener("submit", (e) => {
     "DELTA TOTAL (s)": `${delta.toFixed(3)}s`,
     "EFICIENCIA PI": `${eficiencia} PI/s`,
     ESTADO: estado,
+    // AUXILIARES NUMÉRICOS PARA ORDENACIÓN LIMPIA
+    DELTA_NUM: delta,
+    EFICIENCIA_NUM: parseFloat(eficiencia),
   };
+
+  historialTiempos.push(nuevoRegistro);
+  localStorage.setItem("forza_leaderboard", JSON.stringify(historialTiempos));
+  actualizarBotonExportar();
+  mostrarLeaderboardEnPantalla(); // <--- NUEVO: Redibuja la tabla al guardar
+
+  modalTiempos.classList.remove("activo");
 
   historialTiempos.push(nuevoRegistro);
   localStorage.setItem("forza_leaderboard", JSON.stringify(historialTiempos));
@@ -413,3 +424,96 @@ document.getElementById("btn-limpiar").addEventListener("click", () => {
     );
   }
 });
+// --- 8. LÓGICA DE CONTROL DEL LEADERBOARD VISUAL ---
+let columnaOrdenadaActual = "";
+let ordenAscendente = true;
+
+// Llama a esta función al iniciar la app para pintar datos previos
+// Agrégala dentro del bloque final del .then(data => { ... mostrarLeaderboardEnPantalla(); })
+function mostrarLeaderboardEnPantalla() {
+  const cuerpo = document.getElementById("cuerpo-tabla");
+  const txtTotal = document.getElementById("total-registros");
+  cuerpo.innerHTML = "";
+
+  // FILTRADO DINÁMICO: La tabla obedece a los mismos tags de arriba
+  const registrosFiltrados = historialTiempos.filter((reg) => {
+    // Buscamos la clase en el auto original para emparejar
+    const autoOriginal =
+      todosLosAutos.find((a) => a.modelo === reg.MODELO) || {};
+    let letraAuto = "D";
+    if (autoOriginal.clase) {
+      const partes = autoOriginal.clase.trim().split(" ");
+      letraAuto = partes[partes.length - 1].toUpperCase();
+    }
+
+    return (
+      paisesActivos.has(reg.PAÍS) &&
+      tiposActivos.has(reg["TIPO / CATEGORÍA"]) &&
+      clasesActivas.has(letraAuto)
+    );
+  });
+
+  txtTotal.innerText = `${registrosFiltrados.length} de ${historialTiempos.length} autos mostrados`;
+
+  if (registrosFiltrados.length === 0) {
+    cuerpo.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:#666;">No hay tiempos registrados para los filtros activos.</td></tr>`;
+    return;
+  }
+
+  // Pintar cada fila
+  registrosFiltrados.forEach((reg) => {
+    const fila = document.createElement("tr");
+
+    // Determinar clase estética del estado
+    let claseEstado = "status-good";
+    if (reg.ESTADO.includes("🔥")) claseEstado = "status-fire";
+    if (reg.ESTADO.includes("❌")) claseEstado = "status-bad";
+
+    fila.innerHTML = `
+      <td style="font-weight:bold; color:#fff;">${reg.MARCA}</td>
+      <td>${reg.MODELO}</td>
+      <td style="text-align:center;">${reg["PI STOCK"]}</td>
+      <td>${reg["TIEMPO STOCK"]}</td>
+      <td style="text-align:center;">${reg["PI PROJECT"]}</td>
+      <td>${reg["TIEMPO PROJECT"]}</td>
+      <td style="color:#00ccff; font-weight:bold;">${reg["DELTA TOTAL (s)"]}</td>
+      <td>${reg["EFICIENCIA PI"]}</td>
+      <td><span class="status-tag ${claseEstado}">${reg.ESTADO}</span></td>
+    `;
+    cuerpo.appendChild(fila);
+  });
+}
+
+// Función encargada de ordenar de mayor a menor o viceversa
+function ordenarLeaderboard(columna) {
+  if (columnaOrdenadaActual === columna) {
+    ordenAscendente = !ordenAscendente; // Invierte el orden si repite clic
+  } else {
+    columnaOrdenadaActual = columna;
+    ordenAscendente = true; // Por defecto ascendente
+  }
+
+  historialTiempos.sort((a, b) => {
+    let valA = a[columna];
+    let valB = b[columna];
+
+    // Manejo de ordenación numérica vs texto
+    if (typeof valA === "string") {
+      return ordenAscendente
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    } else {
+      return ordenAscendente ? valA - valB : valB - valA;
+    }
+  });
+
+  mostrarLeaderboardEnPantalla();
+}
+
+// VINCULACIÓN CON LOS FILTROS EXISTENTES:
+// Para que la tabla se actualice al presionar tus tags de Países/Clases/Tipos,
+// busca tu función filtrarAutos() original y agrega al final de su bloque:
+// mostrarLeaderboardEnPantalla();
+
+// Igualmente, en tu botón de limpiar datos, dentro del "if(confirmarBorrado)" agrega:
+// mostrarLeaderboardEnPantalla();
